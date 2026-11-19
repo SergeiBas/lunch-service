@@ -7,9 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
 
-    @GetMapping("/")
-    public String home() { return "Home (public)"; }
-
     @GetMapping("/profile")
     public String profile(Authentication auth) { return "Profile of " + auth.getName(); }
 

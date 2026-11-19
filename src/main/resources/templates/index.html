@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Головна — Готові обіди</title>
+</head>
+<body>
+<section>
+    <div class="p-4 p-md-5 mb-4 bg-light rounded-3">
+        <h1 class="display-6">Готові обіди для вашого офісу</h1>
+        <p class="lead">Замовляйте страви для себе або для всієї команди. Доставимо вчасно.</p>
+        <a class="btn btn-success btn-lg" th:href="@{/menu}">Переглянути меню</a>
+    </div>
+</section>
+</body>
+</html>
