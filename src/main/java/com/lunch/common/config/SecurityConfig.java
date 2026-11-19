@@ -2,7 +2,6 @@ package com.lunch.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,18 +18,26 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   RoleBasedSuccessHandler successHandler) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/register", "/menu/**", "/cart/**",
+                        .requestMatchers("/", "/login", "/register", "/menu/**", "/cart/**",
                                 "/css/**", "/js/**", "/images/**", "/error").permitAll()
                         .requestMatchers("/manager/**").hasRole("ORDER_MANAGER")
                         .requestMatchers("/collector/**").hasRole("COLLECTOR_MANAGER")
                         .requestMatchers("/courier/**").hasRole("COURIER")
                         .anyRequest().authenticated()
                 )
-                .formLogin(Customizer.withDefaults())
-                .logout(Customizer.withDefaults());
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .successHandler(successHandler)
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll()
+                );
         return http.build();
     }
 }
