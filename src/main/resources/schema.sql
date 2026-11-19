@@ -138,3 +138,5 @@ CREATE TABLE IF NOT EXISTS notifications (
     is_read    INTEGER NOT NULL DEFAULT 0 CHECK (is_read IN (0, 1)),
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_dishes_name ON dishes(name);
