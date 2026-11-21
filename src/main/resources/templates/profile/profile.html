@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Профіль — Готові обіди</title>
+</head>
+<body>
+<section>
+    <h2 class="mb-4">Мій профіль</h2>
+
+    <div class="alert alert-success" th:if="${saved}">Зміни збережено.</div>
+
+    <div class="row g-4">
+        <!-- Дані профілю -->
+        <div class="col-lg-7">
+            <form th:action="@{/profile}" th:object="${form}" method="post" novalidate>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="text" class="form-control" th:value="${email}" disabled>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="fullName">Ім'я</label>
+                    <input type="text" id="fullName" th:field="*{fullName}" class="form-control"
+                           th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid'">
+                    <div class="invalid-feedback" th:errors="*{fullName}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="phone">Телефон</label>
+                    <input type="text" id="phone" th:field="*{phone}" class="form-control"
+                           placeholder="+380..."
+                           th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid'">
+                    <div class="invalid-feedback" th:errors="*{phone}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="address">Адреса доставки</label>
+                    <input type="text" id="address" th:field="*{address}" class="form-control"
+                           th:classappend="${#fields.hasErrors('address')} ? 'is-invalid'">
+                    <div class="invalid-feedback" th:errors="*{address}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="dietaryPreferences">Дієтичні вподобання</label>
+                    <input type="text" id="dietaryPreferences" th:field="*{dietaryPreferences}"
+                           class="form-control" placeholder="наприклад: вегетаріанське"
+                           th:classappend="${#fields.hasErrors('dietaryPreferences')} ? 'is-invalid'">
+                    <div class="invalid-feedback" th:errors="*{dietaryPreferences}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label d-block">Алергени</label>
+                    <div class="form-check form-check-inline" th:each="a : ${allAllergens}">
+                        <input class="form-check-input" type="checkbox"
+                               th:field="*{allergenIds}" th:value="${a.id}">
+                        <label class="form-check-label"
+                               th:for="${#ids.prev('allergenIds')}" th:text="${a.name}">Алерген</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success">Зберегти</button>
+            </form>
+        </div>
+
+        <!-- Бонуси -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Бонусний баланс</h5>
+                    <p class="display-6 mb-3"><span th:text="${bonusBalance}">0</span> балів</p>
+
+                    <h6>Історія</h6>
+                    <p class="text-muted small" th:if="${#lists.isEmpty(bonusHistory)}">
+                        Поки що операцій немає.
+                    </p>
+                    <div class="table-responsive" th:unless="${#lists.isEmpty(bonusHistory)}">
+                        <table class="table table-sm align-middle">
+                            <thead>
+                            <tr><th>Дата</th><th>Причина</th><th class="text-end">Бали</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="t : ${bonusHistory}">
+                                <td class="small" th:text="${t.createdAt}">2026-11-21</td>
+                                <td th:text="${t.reason}">Причина</td>
+                                <td class="text-end"
+                                    th:classappend="${t.amount >= 0} ? 'text-success' : 'text-danger'"
+                                    th:text="${t.amount > 0 ? '+' + t.amount : t.amount}">+10</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

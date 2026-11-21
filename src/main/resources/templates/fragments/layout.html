@@ -29,7 +29,10 @@
                 <li class="nav-item" th:if="${userRole == null or userRole == 'CLIENT'}">
                     <a class="nav-link" th:href="@{/cart}">Кошик</a>
                 </li>
-                <li class="nav-item" th:if="${userRole == 'CLIENT'}">
+<!--                <li class="nav-item" th:if="${userRole == 'CLIENT'}">-->
+<!--                    <a class="nav-link" th:href="@{/profile}">Профіль</a>-->
+<!--                </li>-->
+                <li class="nav-item" th:if="${currentUser != null}">
                     <a class="nav-link" th:href="@{/profile}">Профіль</a>
                 </li>
                 <li class="nav-item" th:if="${userRole == 'COLLECTOR_MANAGER'}">

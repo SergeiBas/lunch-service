@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
 
-    @GetMapping("/profile")
-    public String profile(Authentication auth) { return "Profile of " + auth.getName(); }
+//    @GetMapping("/profile")
+//    public String profile(Authentication auth) { return "Profile of " + auth.getName(); }
 
     @GetMapping("/manager/test")
     public String manager() { return "Order manager area"; }

@@ -1,6 +1,9 @@
 package com.lunch.auth.model;
 
 import jakarta.persistence.*;
+import com.lunch.menu.model.Allergen;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -32,6 +35,12 @@ public class User {
     @JoinColumn(name = "role_id")
     private Role role;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_allergens",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "allergen_id"))
+    private Set<Allergen> allergens = new HashSet<>();
+
     public Long getId() { return id; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
@@ -49,4 +58,6 @@ public class User {
     public void setBonusBalance(int bonusBalance) { this.bonusBalance = bonusBalance; }
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
+    public Set<Allergen> getAllergens() { return allergens; }
+    public void setAllergens(Set<Allergen> allergens) { this.allergens = allergens; }
 }
