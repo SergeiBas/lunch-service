@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import com.lunch.menu.model.Allergen;
 import java.util.HashSet;
 import java.util.Set;
+import com.lunch.menu.model.Dish;
 
 @Entity
 @Table(name = "users")
@@ -41,6 +42,12 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "allergen_id"))
     private Set<Allergen> allergens = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "favorite_dishes",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "dish_id"))
+    private Set<Dish> favoriteDishes = new HashSet<>();
+
     public Long getId() { return id; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
@@ -60,4 +67,6 @@ public class User {
     public void setRole(Role role) { this.role = role; }
     public Set<Allergen> getAllergens() { return allergens; }
     public void setAllergens(Set<Allergen> allergens) { this.allergens = allergens; }
+    public Set<Dish> getFavoriteDishes() { return favoriteDishes; }
+    public void setFavoriteDishes(Set<Dish> favoriteDishes) { this.favoriteDishes = favoriteDishes; }
 }
