@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Страва — Готові обіди</title>
+</head>
+<body>
+<section>
+    <h2 class="mb-4" th:text="${editMode} ? 'Редагування страви' : 'Нова страва'">Страва</h2>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <form th:action="@{/manager/menu/save}" th:object="${form}" method="post" novalidate>
+                <input type="hidden" th:field="*{id}">
+
+                <div class="mb-3">
+                    <label class="form-label" for="name">Назва</label>
+                    <input type="text" id="name" th:field="*{name}" class="form-control"
+                           th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
+                    <div class="invalid-feedback" th:errors="*{name}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="description">Опис</label>
+                    <textarea id="description" th:field="*{description}" class="form-control" rows="2"
+                              th:classappend="${#fields.hasErrors('description')} ? 'is-invalid'"></textarea>
+                    <div class="invalid-feedback" th:errors="*{description}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="composition">Склад</label>
+                    <textarea id="composition" th:field="*{composition}" class="form-control" rows="2"
+                              th:classappend="${#fields.hasErrors('composition')} ? 'is-invalid'"></textarea>
+                    <div class="invalid-feedback" th:errors="*{composition}"></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="price">Ціна, грн</label>
+                        <input type="number" id="price" th:field="*{price}" class="form-control"
+                               step="0.01" min="0"
+                               th:classappend="${#fields.hasErrors('price')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:errors="*{price}"></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="categoryId">Категорія</label>
+                        <select id="categoryId" th:field="*{categoryId}" class="form-select"
+                                th:classappend="${#fields.hasErrors('categoryId')} ? 'is-invalid'">
+                            <option value="">— оберіть —</option>
+                            <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}">Категорія</option>
+                        </select>
+                        <div class="invalid-feedback" th:errors="*{categoryId}"></div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="dietLabels">Дієтичні мітки</label>
+                    <input type="text" id="dietLabels" th:field="*{dietLabels}" class="form-control"
+                           placeholder="через кому: вегетаріанське,безглютенове"
+                           th:classappend="${#fields.hasErrors('dietLabels')} ? 'is-invalid'">
+                    <div class="invalid-feedback" th:errors="*{dietLabels}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label d-block">Алергени</label>
+                    <div class="form-check form-check-inline" th:each="a : ${allergens}">
+                        <input class="form-check-input" type="checkbox"
+                               th:field="*{allergenIds}" th:value="${a.id}">
+                        <label class="form-check-label"
+                               th:for="${#ids.prev('allergenIds')}" th:text="${a.name}">Алерген</label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="imageUrl">Зображення (необов'язково)</label>
+                    <input type="text" id="imageUrl" th:field="*{imageUrl}" class="form-control"
+                           placeholder="/images/borsch.jpg"
+                           th:classappend="${#fields.hasErrors('imageUrl')} ? 'is-invalid'">
+                    <div class="invalid-feedback" th:errors="*{imageUrl}"></div>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" id="available" th:field="*{available}">
+                    <label class="form-check-label" for="available">Доступна клієнтам</label>
+                </div>
+
+                <button type="submit" class="btn btn-success">Зберегти</button>
+                <a class="btn btn-outline-secondary" th:href="@{/manager/menu}">Скасувати</a>
+            </form>
+        </div>
+    </div>
+</section>
+</body>
+</html>

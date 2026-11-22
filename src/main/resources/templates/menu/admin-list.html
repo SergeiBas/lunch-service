@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Керування меню — Готові обіди</title>
+</head>
+<body>
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="m-0">Керування меню</h2>
+        <a class="btn btn-success" th:href="@{/manager/menu/new}">+ Додати страву</a>
+    </div>
+
+    <div class="alert alert-success" th:if="${message}" th:text="${message}">Повідомлення</div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+            <tr>
+                <th>Назва</th>
+                <th>Категорія</th>
+                <th class="text-end">Ціна, грн</th>
+                <th>Статус</th>
+                <th class="text-end">Дії</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="d : ${dishes}" th:classappend="${d.archived} ? 'table-secondary'">
+                <td th:text="${d.name}">Назва</td>
+                <td th:text="${d.category.name}">Категорія</td>
+                <td class="text-end" th:text="${#numbers.formatDecimal(d.price, 1, 2)}">0.00</td>
+                <td>
+                    <span class="badge text-bg-secondary" th:if="${d.archived}">Архів</span>
+                    <th:block th:unless="${d.archived}">
+                        <span class="badge text-bg-success" th:if="${d.available}">Доступна</span>
+                        <span class="badge text-bg-warning" th:unless="${d.available}">Прихована</span>
+                    </th:block>
+                </td>
+                <td class="text-end text-nowrap">
+                    <a class="btn btn-sm btn-outline-primary"
+                       th:href="@{/manager/menu/{id}/edit(id=${d.id})}">Редагувати</a>
+
+                    <form th:unless="${d.archived}" class="d-inline"
+                          th:action="@{/manager/menu/{id}/availability(id=${d.id})}" method="post">
+                        <input type="hidden" name="available" th:value="${!d.available}">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary"
+                                th:text="${d.available} ? 'Приховати' : 'Показати'">Приховати</button>
+                    </form>
+
+                    <form th:unless="${d.archived}" class="d-inline"
+                          th:action="@{/manager/menu/{id}/archive(id=${d.id})}" method="post">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">В архів</button>
+                    </form>
+                    <form th:if="${d.archived}" class="d-inline"
+                          th:action="@{/manager/menu/{id}/restore(id=${d.id})}" method="post">
+                        <button type="submit" class="btn btn-sm btn-outline-success">Відновити</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>
