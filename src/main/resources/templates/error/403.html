@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>403 — Доступ заборонено</title>
+</head>
+<body>
+<section>
+    <div class="text-center py-5">
+        <div class="display-1 fw-bold text-success">403</div>
+        <h2 class="mb-3">Доступ заборонено</h2>
+        <p class="text-muted mb-4">У вас немає прав для перегляду цієї сторінки.</p>
+        <a class="btn btn-success" th:href="@{/}">На головну</a>
+    </div>
+</section>
+</body>
+</html>

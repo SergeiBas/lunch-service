@@ -7,9 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
 
-//    @GetMapping("/profile")
-//    public String profile(Authentication auth) { return "Profile of " + auth.getName(); }
-
     @GetMapping("/manager/test")
     public String manager() { return "Order manager area"; }
 
@@ -18,4 +15,9 @@ public class TestController {
 
     @GetMapping("/courier/test")
     public String courier() { return "Courier area"; }
+
+    @GetMapping("/test/error")
+    public String testError() {
+        throw new RuntimeException("Тестова помилка");
+    }
 }

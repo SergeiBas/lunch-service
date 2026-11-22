@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>500 — Внутрішня помилка</title>
+</head>
+<body>
+<section>
+    <div class="text-center py-5">
+        <div class="display-1 fw-bold text-success">500</div>
+        <h2 class="mb-3">Щось пішло не так</h2>
+        <p class="text-muted mb-4">Сталася внутрішня помилка. Спробуйте ще раз трохи пізніше.</p>
+        <a class="btn btn-success" th:href="@{/}">На головну</a>
+    </div>
+</section>
+</body>
+</html>
