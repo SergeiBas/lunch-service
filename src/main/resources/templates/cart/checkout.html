@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Оформлення замовлення — Готові обіди</title>
+</head>
+<body>
+<section>
+    <h2 class="mb-4">Оформлення замовлення</h2>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <form th:action="@{/cart/checkout}" th:object="${form}" method="post" novalidate>
+
+                <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+                    <div th:each="e : ${#fields.globalErrors()}" th:text="${e}">Помилка</div>
+                </div>
+
+                <th:block th:if="${isGuest}">
+                    <p class="text-muted">
+                        Ви оформлюєте замовлення без входу.
+                        <a th:href="@{/login}">Увійти</a> або <a th:href="@{/register}">зареєструватися</a>,
+                        щоб зберігати адресу та отримувати бонуси.
+                    </p>
+                    <div class="mb-3">
+                        <label class="form-label" for="guestName">Ім'я</label>
+                        <input type="text" id="guestName" th:field="*{guestName}" class="form-control"
+                               th:classappend="${#fields.hasErrors('guestName')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:errors="*{guestName}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="guestPhone">Телефон</label>
+                        <input type="text" id="guestPhone" th:field="*{guestPhone}" class="form-control"
+                               placeholder="+380..."
+                               th:classappend="${#fields.hasErrors('guestPhone')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:errors="*{guestPhone}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="guestEmail">Email (для сповіщень)</label>
+                        <input type="email" id="guestEmail" th:field="*{guestEmail}" class="form-control"
+                               th:classappend="${#fields.hasErrors('guestEmail')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:errors="*{guestEmail}"></div>
+                    </div>
+                </th:block>
+
+                <div class="mb-3">
+                    <label class="form-label" for="deliveryAddress">Адреса доставки</label>
+                    <input type="text" id="deliveryAddress" th:field="*{deliveryAddress}" class="form-control"
+                           th:classappend="${#fields.hasErrors('deliveryAddress')} ? 'is-invalid'">
+                    <div class="invalid-feedback" th:errors="*{deliveryAddress}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="comment">Коментар (необов'язково)</label>
+                    <textarea id="comment" th:field="*{comment}" class="form-control" rows="2"
+                              th:classappend="${#fields.hasErrors('comment')} ? 'is-invalid'"></textarea>
+                    <div class="invalid-feedback" th:errors="*{comment}"></div>
+                </div>
+
+                <button type="submit" class="btn btn-success">Підтвердити замовлення</button>
+                <a class="btn btn-outline-secondary" th:href="@{/cart}">Назад до кошика</a>
+            </form>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Ваше замовлення</h5>
+                    <ul class="list-unstyled mb-3">
+                        <li class="d-flex justify-content-between" th:each="l : ${lines}">
+                            <span><span th:text="${l.dish.name}">Назва</span> × <span th:text="${l.quantity}">1</span></span>
+                            <span th:text="${#numbers.formatDecimal(l.lineTotal, 1, 2)}">0.00</span>
+                        </li>
+                    </ul>
+                    <hr>
+                    <div class="d-flex justify-content-between fs-5 fw-semibold">
+                        <span>Разом, грн</span>
+                        <span th:text="${#numbers.formatDecimal(subtotal, 1, 2)}">0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

@@ -7,6 +7,8 @@
 <body>
 <section>
     <h2 class="mb-4">Меню</h2>
+    <div class="alert alert-success" th:if="${message}" th:text="${message}">Повідомлення</div>
+    <div class="alert alert-danger" th:if="${error}" th:text="${error}">Помилка</div>
 
     <!-- Фільтри -->
     <form th:action="@{/menu}" th:object="${filter}" method="get" class="card card-body mb-4">
@@ -90,8 +92,14 @@
                         <span class="badge text-bg-warning me-1" th:each="a : ${d.allergens}" th:text="${a.name}">алерген</span>
                     </div>
 
-                    <div class="mt-auto fs-5 fw-semibold">
-                        <span th:text="${#numbers.formatDecimal(d.price, 1, 2)}">0.00</span> грн
+                    <div class="mt-auto d-flex justify-content-between align-items-center">
+                        <span class="fs-5 fw-semibold">
+                            <span th:text="${#numbers.formatDecimal(d.price, 1, 2)}">0.00</span> грн
+                        </span>
+                        <form th:action="@{/cart/add/{id}(id=${d.id})}" method="post" class="m-0">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-success btn-sm">У кошик</button>
+                        </form>
                     </div>
                 </div>
             </div>

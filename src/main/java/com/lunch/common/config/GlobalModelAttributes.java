@@ -1,5 +1,6 @@
 package com.lunch.common.config;
 
+import com.lunch.order.service.Cart;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -27,5 +28,16 @@ public class GlobalModelAttributes {
     private boolean isLoggedIn(Authentication auth) {
         return auth != null && auth.isAuthenticated()
                 && !(auth instanceof AnonymousAuthenticationToken);
+    }
+
+    private final Cart cart;
+
+    public GlobalModelAttributes(Cart cart) {
+        this.cart = cart;
+    }
+
+    @ModelAttribute("cartCount")
+    public int cartCount() {
+        return cart.totalCount();
     }
 }

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Замовлення прийнято — Готові обіди</title>
+</head>
+<body>
+<section>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-4">
+                <div class="display-4 text-success">✓</div>
+                <h2>Дякуємо! Замовлення <span th:text="'№' + ${order.id}">№1</span> прийнято</h2>
+                <p class="text-muted">
+                    Статус: <span class="badge text-bg-primary" th:text="${order.status.label}">Нове</span>
+                </p>
+            </div>
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <p class="mb-1"><strong>Адреса доставки:</strong> <span th:text="${order.deliveryAddress}">адреса</span></p>
+                    <p class="mb-1" th:if="${order.guestName != null}">
+                        <strong>Контакт:</strong>
+                        <span th:text="${order.guestName}">ім'я</span>,
+                        <span th:text="${order.guestPhone}">телефон</span>
+                    </p>
+                    <p class="mb-3" th:if="${order.comment != null}">
+                        <strong>Коментар:</strong> <span th:text="${order.comment}">коментар</span>
+                    </p>
+
+                    <table class="table table-sm align-middle mb-0">
+                        <thead>
+                        <tr><th>Страва</th><th class="text-end">Ціна</th><th class="text-end">К-сть</th><th class="text-end">Сума</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="i : ${order.items}">
+                            <td th:text="${i.dish.name}">Назва</td>
+                            <td class="text-end" th:text="${#numbers.formatDecimal(i.unitPrice, 1, 2)}">0.00</td>
+                            <td class="text-end" th:text="${i.quantity}">1</td>
+                            <td class="text-end" th:text="${#numbers.formatDecimal(i.lineTotal, 1, 2)}">0.00</td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th colspan="3" class="text-end">Разом, грн:</th>
+                            <th class="text-end" th:text="${#numbers.formatDecimal(order.total, 1, 2)}">0.00</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <a class="btn btn-success" th:href="@{/menu}">Повернутися до меню</a>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
