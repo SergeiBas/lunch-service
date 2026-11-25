@@ -54,7 +54,7 @@ public class Order {
     @Column(name = "created_at", insertable = false, updatable = false)
     private String createdAt;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<OrderItem> items = new ArrayList<>();
 
     public Long getId() { return id; }

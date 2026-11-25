@@ -36,13 +36,16 @@
                     <a class="nav-link" th:href="@{/profile}">Профіль</a>
                 </li>
                 <li class="nav-item" th:if="${userRole == 'COLLECTOR_MANAGER'}">
-                    <a class="nav-link" th:href="@{/collector/orders}">Групові замовлення</a>
+                    <a class="nav-link" th:href="@{/collector/rooms}">Групові замовлення</a>
                 </li>
                 <li class="nav-item" th:if="${userRole == 'ORDER_MANAGER'}">
                     <a class="nav-link" th:href="@{/manager/orders}">Замовлення</a>
                 </li>
                 <li class="nav-item" th:if="${userRole == 'ORDER_MANAGER'}">
                     <a class="nav-link" th:href="@{/manager/menu}">Керування меню</a>
+                </li>
+                <li class="nav-item" th:if="${userRole == null or userRole == 'CLIENT'}">
+                    <a class="nav-link" th:href="@{/join}">Приєднатися до групи</a>
                 </li>
                 <li class="nav-item" th:if="${userRole == 'COURIER'}">
                     <a class="nav-link" th:href="@{/courier/deliveries}">Мої доставки</a>

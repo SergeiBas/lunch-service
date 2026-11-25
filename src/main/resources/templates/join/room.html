@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Групове замовлення — Готові обіди</title>
+</head>
+<body>
+<section>
+    <h2 class="mb-1" th:text="${group.title}">Назва</h2>
+    <p class="text-muted">
+        Код кімнати: <code th:text="${group.roomCode}">ABC123</code> ·
+        <span th:text="${group.status.label}">Статус</span>
+    </p>
+
+    <div class="alert alert-success" th:if="${message}" th:text="${message}">Повідомлення</div>
+    <div class="alert alert-warning" th:if="${warning}" th:text="${warning}">Попередження</div>
+    <div class="alert alert-danger" th:if="${error}" th:text="${error}">Помилка</div>
+
+    <div class="alert alert-secondary" th:unless="${group.open}">
+        Збір замовлень у цій кімнаті закрито. Нові позиції додати не можна.
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6" th:if="${group.open}">
+            <h5>Додати страву</h5>
+
+            <!--/*@thymesVar id="form" type="com.lunch.order.model.ParticipantItemForm"*/-->
+            <form th:action="@{/join/{code}/items(code=${group.roomCode})}" th:object="${form}"
+                  method="post" novalidate>
+                <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+                    <div th:each="e : ${#fields.globalErrors()}" th:text="${e}">Помилка</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="participantName">Ваше ім'я</label>
+                    <input type="text" id="participantName" th:field="*{participantName}" class="form-control"
+                           th:classappend="${#fields.hasErrors('participantName')} ? 'is-invalid'">
+                    <div class="invalid-feedback" th:errors="*{participantName}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="dishId">Страва</label>
+                    <select id="dishId" th:field="*{dishId}" class="form-select"
+                            th:classappend="${#fields.hasErrors('dishId')} ? 'is-invalid'">
+                        <option value="">— оберіть —</option>
+                        <option th:each="d : ${dishes}" th:value="${d.id}"
+                                th:text="${d.category.name + ' — ' + d.name + ' (' + #numbers.formatDecimal(d.price, 1, 2) + ' грн)'}">
+                            Страва
+                        </option>
+                    </select>
+                    <div class="invalid-feedback" th:errors="*{dishId}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="quantity">Кількість</label>
+                    <input type="number" id="quantity" th:field="*{quantity}" class="form-control"
+                           min="1" max="20"
+                           th:classappend="${#fields.hasErrors('quantity')} ? 'is-invalid'">
+                    <div class="invalid-feedback" th:errors="*{quantity}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label d-block">Мої алергени</label>
+                    <div class="form-check form-check-inline" th:each="a : ${allergens}">
+                        <input class="form-check-input" type="checkbox"
+                               th:field="*{allergenIds}" th:value="${a.id}">
+                        <label class="form-check-label"
+                               th:for="${#ids.prev('allergenIds')}" th:text="${a.name}">Алерген</label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="wishes">Побажання (необов'язково)</label>
+                    <input type="text" id="wishes" th:field="*{wishes}" class="form-control"
+                           placeholder="наприклад: без цибулі"
+                           th:classappend="${#fields.hasErrors('wishes')} ? 'is-invalid'">
+                    <div class="invalid-feedback" th:errors="*{wishes}"></div>
+                </div>
+
+                <button type="submit" class="btn btn-success">Додати</button>
+            </form>
+        </div>
+
+        <div class="col-lg-6">
+            <h5>Мої позиції</h5>
+            <p class="text-muted" th:if="${#lists.isEmpty(myItems)}">Ви ще нічого не додали.</p>
+
+            <ul class="list-group" th:unless="${#lists.isEmpty(myItems)}">
+                <li class="list-group-item d-flex justify-content-between align-items-start"
+                    th:each="i : ${myItems}">
+                    <div>
+                        <div><strong th:text="${i.dish.name}">Страва</strong> × <span th:text="${i.quantity}">1</span></div>
+                        <div class="small text-muted" th:if="${i.participantAllergens != null}"
+                             th:text="'Алергени: ' + ${i.participantAllergens}">Алергени</div>
+                        <div class="small text-muted" th:if="${i.participantWishes != null}"
+                             th:text="'Побажання: ' + ${i.participantWishes}">Побажання</div>
+                        <span class="badge text-bg-danger" th:if="${!#lists.isEmpty(i.allergenConflicts)}"
+                              th:text="'⚠ ' + ${#strings.listJoin(i.allergenConflicts, ', ')}">⚠</span>
+                    </div>
+                    <div class="text-end">
+                        <div th:text="${#numbers.formatDecimal(i.lineTotal, 1, 2)} + ' грн'">0 грн</div>
+                        <form th:if="${group.open}"
+                              th:action="@{/join/{code}/items/{id}/remove(code=${group.roomCode},id=${i.id})}"
+                              method="post" class="m-0">
+                            <button type="submit" class="btn btn-sm btn-link text-danger p-0">Видалити</button>
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>
+</body>
+</html>

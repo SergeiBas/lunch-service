@@ -22,7 +22,7 @@ public class SecurityConfig {
                                                    RoleBasedSuccessHandler successHandler) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/register", "/menu/**", "/cart/**",
+                        .requestMatchers("/", "/login", "/register", "/menu/**", "/cart/**", "/join/**",
                                 "/css/**", "/js/**", "/images/**", "/error").permitAll()
                         .requestMatchers("/manager/**").hasRole("ORDER_MANAGER")
                         .requestMatchers("/collector/**").hasRole("COLLECTOR_MANAGER")

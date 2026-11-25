@@ -2,6 +2,11 @@ package com.lunch.order.model;
 
 import com.lunch.menu.model.Dish;
 import jakarta.persistence.*;
+import com.lunch.menu.model.Allergen;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "order_items")
@@ -36,6 +41,22 @@ public class OrderItem {
 
     public double getLineTotal() {
         return Math.round(unitPrice * quantity * 100.0) / 100.0;
+    }
+
+    /** Алергени учасника, які містить обрана страва. Порожній список, якщо збігів немає. */
+    public List<String> getAllergenConflicts() {
+        if (participantAllergens == null || participantAllergens.isBlank()) {
+            return List.of();
+        }
+        Set<String> mine = Arrays.stream(participantAllergens.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toSet());
+        return dish.getAllergens().stream()
+                .map(Allergen::getName)
+                .filter(mine::contains)
+                .sorted()
+                .toList();
     }
 
     public Long getId() { return id; }

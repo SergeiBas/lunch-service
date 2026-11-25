@@ -19,7 +19,7 @@ public class RoleBasedSuccessHandler implements AuthenticationSuccessHandler {
         for (GrantedAuthority authority : authentication.getAuthorities()) {
             switch (authority.getAuthority()) {
                 case "ROLE_ORDER_MANAGER" -> target = "/manager/test";
-                case "ROLE_COLLECTOR_MANAGER" -> target = "/collector/test";
+                case "ROLE_COLLECTOR_MANAGER" -> target = "/collector/rooms";
                 case "ROLE_COURIER" -> target = "/courier/test";
                 default -> { }
             }

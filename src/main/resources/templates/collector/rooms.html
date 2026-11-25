@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Групові замовлення — Готові обіди</title>
+</head>
+<body>
+<section>
+    <h2 class="mb-4">Групові замовлення</h2>
+
+    <!--/*@thymesVar id="form" type="com.lunch.order.model.GroupRoomForm"*/-->
+    <form th:action="@{/collector/rooms}" th:object="${form}" method="post" class="card card-body mb-4" novalidate>
+        <label class="form-label" for="title">Нова кімната для збору замовлень</label>
+        <div class="input-group">
+            <input type="text" id="title" th:field="*{title}" class="form-control"
+                   placeholder="наприклад: Обід відділу продажів, п'ятниця"
+                   th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'">
+            <button type="submit" class="btn btn-success">Створити</button>
+            <div class="invalid-feedback" th:errors="*{title}"></div>
+        </div>
+    </form>
+
+    <p class="text-muted" th:if="${#lists.isEmpty(rooms)}">Ви ще не створювали кімнат.</p>
+
+    <div class="table-responsive" th:unless="${#lists.isEmpty(rooms)}">
+        <table class="table table-hover align-middle">
+            <thead>
+            <tr><th>Назва</th><th>Код</th><th>Статус</th><th>Створено</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${rooms}">
+                <td th:text="${r.title}">Назва</td>
+                <td><code th:text="${r.roomCode}">ABC123</code></td>
+                <td>
+                    <span class="badge" th:classappend="${r.open} ? 'text-bg-success' : 'text-bg-secondary'"
+                          th:text="${r.status.label}">Статус</span>
+                </td>
+                <td class="small" th:text="${r.createdAt}">2026-11-25</td>
+                <td class="text-end">
+                    <a class="btn btn-sm btn-outline-primary" th:href="@{/collector/rooms/{id}(id=${r.id})}">Відкрити</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

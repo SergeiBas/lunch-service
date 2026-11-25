@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Приєднатися до групи — Готові обіди</title>
+</head>
+<body>
+<section>
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <h2 class="mb-4">Приєднатися до групи</h2>
+
+            <div class="alert alert-danger" th:if="${error}" th:text="${error}">Помилка</div>
+
+            <form th:action="@{/join}" method="post">
+                <div class="mb-3">
+                    <label class="form-label" for="code">Код кімнати</label>
+                    <input type="text" id="code" name="code" class="form-control form-control-lg text-uppercase"
+                           maxlength="12" placeholder="ABC123" required autofocus>
+                    <div class="form-text">Код надішле менеджер, який збирає замовлення.</div>
+                </div>
+                <button type="submit" class="btn btn-success w-100">Приєднатися</button>
+            </form>
+        </div>
+    </div>
+</section>
+</body>
+</html>
