@@ -6,13 +6,7 @@ import com.lunch.menu.model.Allergen;
 import com.lunch.menu.model.Dish;
 import com.lunch.menu.repository.AllergenRepository;
 import com.lunch.menu.repository.DishRepository;
-import com.lunch.order.model.CloseGroupForm;
-import com.lunch.order.model.GroupOrder;
-import com.lunch.order.model.GroupOrderStatus;
-import com.lunch.order.model.Order;
-import com.lunch.order.model.OrderItem;
-import com.lunch.order.model.OrderStatus;
-import com.lunch.order.model.ParticipantItemForm;
+import com.lunch.order.model.*;
 import com.lunch.order.repository.GroupOrderRepository;
 import com.lunch.order.repository.OrderRepository;
 import org.springframework.security.access.AccessDeniedException;
@@ -188,8 +182,18 @@ public class GroupOrderService {
     private void recalculate(Order order) {
         double subtotal = priceCalculationService.round2(
                 order.getItems().stream().mapToDouble(OrderItem::getLineTotal).sum());
-        order.setSubtotal(subtotal);
-        order.setTotal(subtotal); // знижки додамо в задачі «Розрахунок вартості»
+        int totalQuantity = order.getItems().stream().mapToInt(OrderItem::getQuantity).sum();
+
+        PriceBreakdown price = priceCalculationService.calculate(subtotal, totalQuantity, true, 0, 0);
+        order.setSubtotal(price.getSubtotal());
+        order.setDiscount(price.getDiscount());
+        order.setBonusUsed(0);
+        order.setTotal(price.getTotal());
+    }
+
+    public int discountPercent(Order order) {
+        int totalQuantity = order.getItems().stream().mapToInt(OrderItem::getQuantity).sum();
+        return priceCalculationService.discountPercent(totalQuantity, true);
     }
 
     private String generateCode() {

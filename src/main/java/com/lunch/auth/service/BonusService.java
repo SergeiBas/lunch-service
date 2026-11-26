@@ -43,4 +43,9 @@ public class BonusService {
         transaction.setReason(reason);
         transactionRepository.save(transaction);
     }
+
+    @Transactional(readOnly = true)
+    public boolean alreadyAwarded(Long orderId) {
+        return transactionRepository.existsByOrderIdAndAmountGreaterThan(orderId, 0);
+    }
 }

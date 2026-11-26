@@ -57,6 +57,18 @@
                     <div class="invalid-feedback" th:errors="*{comment}"></div>
                 </div>
 
+                <div class="mb-3" th:unless="${isGuest}">
+                    <label class="form-label" for="bonusToUse">Списати бонуси</label>
+                    <input type="number" id="bonusToUse" th:field="*{bonusToUse}" class="form-control"
+                           min="0" th:max="${maxBonus}" placeholder="0"
+                           th:classappend="${#fields.hasErrors('bonusToUse')} ? 'is-invalid'">
+                    <div class="invalid-feedback" th:errors="*{bonusToUse}"></div>
+                    <div class="form-text">
+                        На рахунку: <strong th:text="${bonusBalance}">0</strong>.
+                        Можна списати до <strong th:text="${maxBonus}">0</strong> (1 бонус = 1 грн).
+                    </div>
+                </div>
+
                 <button type="submit" class="btn btn-success">Підтвердити замовлення</button>
                 <a class="btn btn-outline-secondary" th:href="@{/cart}">Назад до кошика</a>
             </form>

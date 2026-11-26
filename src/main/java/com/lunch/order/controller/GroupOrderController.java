@@ -85,11 +85,16 @@ public class GroupOrderController {
                 .collect(Collectors.groupingBy(
                         i -> i.getParticipantName() == null ? "—" : i.getParticipantName(),
                         LinkedHashMap::new, Collectors.toList()));
+        Map<String, Double> participantTotals = new LinkedHashMap<>();
+        byParticipant.forEach((name, items) -> participantTotals.put(name,
+                Math.round(items.stream().mapToDouble(OrderItem::getLineTotal).sum() * 100.0) / 100.0));
+        model.addAttribute("participantTotals", participantTotals);
         long conflictCount = order.getItems().stream()
                 .filter(i -> !i.getAllergenConflicts().isEmpty()).count();
 
         model.addAttribute("group", group);
         model.addAttribute("order", order);
+        model.addAttribute("discountPercent", groupOrderService.discountPercent(order));
         model.addAttribute("byParticipant", byParticipant);
         model.addAttribute("conflictCount", conflictCount);
         model.addAttribute("joinUrl", ServletUriComponentsBuilder.fromCurrentContextPath()

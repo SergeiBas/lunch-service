@@ -42,6 +42,18 @@
                         </tbody>
                         <tfoot>
                         <tr>
+                            <td colspan="3" class="text-end">Сума:</td>
+                            <td class="text-end" th:text="${#numbers.formatDecimal(order.subtotal, 1, 2)}">0.00</td>
+                        </tr>
+                        <tr th:if="${order.discount > 0}">
+                            <td colspan="3" class="text-end">Знижка:</td>
+                            <td class="text-end text-success" th:text="'−' + ${#numbers.formatDecimal(order.discount, 1, 2)}">0.00</td>
+                        </tr>
+                        <tr th:if="${order.bonusUsed > 0}">
+                            <td colspan="3" class="text-end">Списано бонусів:</td>
+                            <td class="text-end text-success" th:text="'−' + ${order.bonusUsed}">0</td>
+                        </tr>
+                        <tr>
                             <th colspan="3" class="text-end">Разом, грн:</th>
                             <th class="text-end" th:text="${#numbers.formatDecimal(order.total, 1, 2)}">0.00</th>
                         </tr>

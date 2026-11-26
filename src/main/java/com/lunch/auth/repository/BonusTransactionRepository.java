@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface BonusTransactionRepository extends JpaRepository<BonusTransaction, Long> {
     List<BonusTransaction> findByUserIdOrderByIdDesc(Long userId);
+    boolean existsByOrderIdAndAmountGreaterThan(Long orderId, int amount);
 }

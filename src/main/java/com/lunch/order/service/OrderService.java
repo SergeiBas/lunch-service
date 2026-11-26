@@ -2,11 +2,13 @@ package com.lunch.order.service;
 
 import com.lunch.auth.model.User;
 import com.lunch.auth.repository.UserRepository;
+import com.lunch.auth.service.BonusService;
 import com.lunch.order.model.CartLine;
 import com.lunch.order.model.CheckoutForm;
 import com.lunch.order.model.Order;
 import com.lunch.order.model.OrderItem;
 import com.lunch.order.model.OrderStatus;
+import com.lunch.order.model.PriceBreakdown;
 import com.lunch.order.repository.OrderRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -21,13 +23,16 @@ public class OrderService {
     private final UserRepository userRepository;
     private final CartService cartService;
     private final PriceCalculationService priceCalculationService;
+    private final BonusService bonusService;
 
     public OrderService(OrderRepository orderRepository, UserRepository userRepository,
-                        CartService cartService, PriceCalculationService priceCalculationService) {
+                        CartService cartService, PriceCalculationService priceCalculationService,
+                        BonusService bonusService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.cartService = cartService;
         this.priceCalculationService = priceCalculationService;
+        this.bonusService = bonusService;
     }
 
     /** Оформлює замовлення з поточного кошика. userEmail = null для гостя. */
@@ -43,8 +48,9 @@ public class OrderService {
         order.setDeliveryAddress(form.getDeliveryAddress().trim());
         order.setComment(blankToNull(form.getComment()));
 
+        User user = null;
         if (userEmail != null) {
-            User user = userRepository.findByEmail(userEmail).orElseThrow();
+            user = userRepository.findByEmail(userEmail).orElseThrow();
             order.setUserId(user.getId());
         } else {
             order.setGuestName(form.getGuestName().trim());
@@ -52,11 +58,17 @@ public class OrderService {
             order.setGuestEmail(form.getGuestEmail().trim().toLowerCase());
         }
 
-        double subtotal = priceCalculationService.subtotal(lines);
-        order.setSubtotal(subtotal);
-        order.setDiscount(0);
-        order.setBonusUsed(0);
-        order.setTotal(subtotal);
+        int requestedBonus = (user != null && form.getBonusToUse() != null) ? form.getBonusToUse() : 0;
+        int balance = user != null ? user.getBonusBalance() : 0;
+        int totalQuantity = lines.stream().mapToInt(CartLine::getQuantity).sum();
+
+        PriceBreakdown price = priceCalculationService.calculate(
+                priceCalculationService.subtotal(lines), totalQuantity, false, requestedBonus, balance);
+
+        order.setSubtotal(price.getSubtotal());
+        order.setDiscount(price.getDiscount());
+        order.setBonusUsed(price.getBonusUsed());
+        order.setTotal(price.getTotal());
 
         for (CartLine line : lines) {
             OrderItem item = new OrderItem();
@@ -68,8 +80,31 @@ public class OrderService {
         }
 
         Order saved = orderRepository.save(order);
+
+        if (user != null && price.getBonusUsed() > 0) {
+            bonusService.changeBalance(user.getId(), -price.getBonusUsed(),
+                    "Списання за замовлення №" + saved.getId(), saved.getId());
+        }
+
         cartService.clear();
         return saved;
+    }
+
+    /**
+     * Нараховує бонуси за виконане замовлення (викличемо у SCRUM-18, коли статус стане «Виконано»).
+     * Повторний виклик для того самого замовлення нічого не робить.
+     */
+    @Transactional
+    public void awardBonuses(Long orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow();
+        if (order.getUserId() == null || bonusService.alreadyAwarded(orderId)) {
+            return;
+        }
+        int points = priceCalculationService.bonusEarned(order.getTotal());
+        if (points > 0) {
+            bonusService.changeBalance(order.getUserId(), points,
+                    "Нарахування за замовлення №" + orderId, orderId);
+        }
     }
 
     /**

@@ -37,7 +37,7 @@
     <div class="card mb-3" th:each="entry : ${byParticipant}">
         <div class="card-header d-flex justify-content-between">
             <strong th:text="${entry.key}">Ім'я</strong>
-            <span th:text="${#numbers.formatDecimal(#aggregates.sum(entry.value.![lineTotal]), 1, 2)} + ' грн'">0 грн</span>
+            <span th:text="${#numbers.formatDecimal(participantTotals[entry.key], 1, 2)} + ' грн'">0 грн</span>
         </div>
         <div class="table-responsive">
             <table class="table table-sm align-middle mb-0">
@@ -66,9 +66,20 @@
         </div>
     </div>
 
-    <div class="d-flex justify-content-between fs-5 fw-semibold mb-4" th:unless="${#lists.isEmpty(order.items)}">
-        <span>Разом, грн</span>
-        <span th:text="${#numbers.formatDecimal(order.total, 1, 2)}">0.00</span>
+    <div class="card card-body mb-4" th:unless="${#lists.isEmpty(order.items)}">
+        <div class="d-flex justify-content-between">
+            <span>Сума</span>
+            <span th:text="${#numbers.formatDecimal(order.subtotal, 1, 2)}">0.00</span>
+        </div>
+        <div class="d-flex justify-content-between text-success" th:if="${order.discount > 0}">
+            <span>Групова знижка (<span th:text="${discountPercent}">5</span>%)</span>
+            <span th:text="'−' + ${#numbers.formatDecimal(order.discount, 1, 2)}">0.00</span>
+        </div>
+        <div class="d-flex justify-content-between fs-5 fw-semibold border-top pt-2 mt-2">
+            <span>Разом, грн</span>
+            <span th:text="${#numbers.formatDecimal(order.total, 1, 2)}">0.00</span>
+        </div>
+        <div class="small text-muted mt-2">Групова знижка: від 5 порцій 5%, від 10 порцій 10%.</div>
     </div>
 
     <!-- Закриття збору -->

@@ -1,5 +1,6 @@
 package com.lunch.order.model;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -17,6 +18,9 @@ public class CheckoutForm {
     @Size(max = 500, message = "Коментар занадто довгий")
     private String comment;
 
+    @Min(value = 0, message = "Кількість бонусів не може бути від'ємною")
+    private Integer bonusToUse;
+
     public String getGuestName() { return guestName; }
     public void setGuestName(String guestName) { this.guestName = guestName; }
     public String getGuestPhone() { return guestPhone; }
@@ -27,4 +31,6 @@ public class CheckoutForm {
     public void setDeliveryAddress(String deliveryAddress) { this.deliveryAddress = deliveryAddress; }
     public String getComment() { return comment; }
     public void setComment(String comment) { this.comment = comment; }
+    public Integer getBonusToUse() { return bonusToUse; }
+    public void setBonusToUse(Integer bonusToUse) { this.bonusToUse = bonusToUse; }
 }

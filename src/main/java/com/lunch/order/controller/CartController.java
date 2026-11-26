@@ -78,12 +78,11 @@ public class CartController {
             return "redirect:/cart";
         }
         CheckoutForm form = new CheckoutForm();
-        boolean guest = !isLoggedIn(auth);
-        if (!guest) {
+        if (isLoggedIn(auth)) {
             form.setDeliveryAddress(profileService.getUser(auth.getName()).getAddress());
         }
         model.addAttribute("form", form);
-        fillCheckoutModel(model, guest);
+        fillCheckoutModel(model, auth);
         return "cart/checkout";
     }
 
@@ -96,6 +95,8 @@ public class CartController {
         boolean guest = !isLoggedIn(auth);
         if (guest) {
             validateGuest(form, result);
+        } else {
+            validateBonus(form, auth, result);
         }
         if (!result.hasErrors()) {
             try {
@@ -108,7 +109,7 @@ public class CartController {
                 result.reject("unavailable", e.getMessage());
             }
         }
-        fillCheckoutModel(model, guest);
+        fillCheckoutModel(model, auth);
         return "cart/checkout";
     }
 
@@ -123,15 +124,23 @@ public class CartController {
 
     // ---------- допоміжні методи ----------
 
-    private void fillCartModel(Model model) {
+    private double fillCartModel(Model model) {
         List<CartLine> lines = cartService.getLines();
+        double subtotal = priceCalculationService.subtotal(lines);
         model.addAttribute("lines", lines);
-        model.addAttribute("subtotal", priceCalculationService.subtotal(lines));
+        model.addAttribute("subtotal", subtotal);
+        return subtotal;
     }
 
-    private void fillCheckoutModel(Model model, boolean guest) {
-        fillCartModel(model);
+    private void fillCheckoutModel(Model model, Authentication auth) {
+        boolean guest = !isLoggedIn(auth);
+        double subtotal = fillCartModel(model);
         model.addAttribute("isGuest", guest);
+        if (!guest) {
+            int balance = profileService.getUser(auth.getName()).getBonusBalance();
+            model.addAttribute("bonusBalance", balance);
+            model.addAttribute("maxBonus", priceCalculationService.maxBonus(subtotal, balance));
+        }
     }
 
     private void validateGuest(CheckoutForm form, BindingResult result) {
@@ -143,6 +152,19 @@ public class CartController {
         }
         if (isBlank(form.getGuestEmail()) || !form.getGuestEmail().matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
             result.rejectValue("guestEmail", "invalid", "Вкажіть коректний email");
+        }
+    }
+
+    private void validateBonus(CheckoutForm form, Authentication auth, BindingResult result) {
+        Integer requested = form.getBonusToUse();
+        if (requested == null || result.hasFieldErrors("bonusToUse")) {
+            return;
+        }
+        int balance = profileService.getUser(auth.getName()).getBonusBalance();
+        int max = priceCalculationService.maxBonus(
+                priceCalculationService.subtotal(cartService.getLines()), balance);
+        if (requested > max) {
+            result.rejectValue("bonusToUse", "tooMuch", "Можна списати не більше " + max + " бонусів");
         }
     }
 
