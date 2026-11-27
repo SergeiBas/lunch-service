@@ -127,6 +127,12 @@ public class OrderService {
         return order;
     }
 
+    @Transactional(readOnly = true)
+    public List<Order> getOrdersForUser(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        return orderRepository.findByUserIdOrderByIdDesc(user.getId());
+    }
+
     private String blankToNull(String value) {
         return (value == null || value.isBlank()) ? null : value.trim();
     }

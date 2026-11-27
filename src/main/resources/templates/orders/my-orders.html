@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Мої замовлення — Готові обіди</title>
+</head>
+<body>
+<section>
+    <h2 class="mb-4">Мої замовлення</h2>
+
+    <div class="text-center py-5" th:if="${#lists.isEmpty(orders)}">
+        <p class="text-muted fs-5">Ви ще не робили замовлень.</p>
+        <a class="btn btn-success" th:href="@{/menu}">До меню</a>
+    </div>
+
+    <div class="table-responsive" th:unless="${#lists.isEmpty(orders)}">
+        <table class="table table-hover align-middle">
+            <thead>
+            <tr><th>№</th><th>Створено</th><th class="text-end">Сума, грн</th><th>Статус</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="o : ${orders}">
+                <td th:text="${o.id}">1</td>
+                <td class="small" th:text="${o.createdAt}">2026-11-27</td>
+                <td class="text-end" th:text="${#numbers.formatDecimal(o.total, 1, 2)}">0.00</td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${o.status.name() == 'NEW'} ? 'text-bg-warning'
+                              : (${o.status.name() == 'REJECTED'} ? 'text-bg-danger'
+                              : (${o.status.name() == 'COMPLETED'} ? 'text-bg-success' : 'text-bg-primary'))"
+                          th:text="${o.status.label}">Статус</span>
+                </td>
+                <td class="text-end">
+                    <a class="btn btn-sm btn-outline-primary"
+                       th:href="@{/cart/confirmation/{id}(id=${o.id})}">Деталі</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

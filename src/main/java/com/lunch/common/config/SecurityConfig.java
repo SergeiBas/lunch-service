@@ -25,6 +25,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/login", "/register", "/menu/**", "/cart/**", "/join/**",
                                 "/css/**", "/js/**", "/images/**", "/error").permitAll()
                         .requestMatchers("/manager/**").hasRole("ORDER_MANAGER")
+                        .requestMatchers("/orders/**").hasRole("CLIENT")
                         .requestMatchers("/collector/**").hasRole("COLLECTOR_MANAGER")
                         .requestMatchers("/courier/**").hasRole("COURIER")
                         .anyRequest().authenticated()

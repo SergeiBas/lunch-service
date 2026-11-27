@@ -35,6 +35,9 @@
                 <li class="nav-item" th:if="${currentUser != null}">
                     <a class="nav-link" th:href="@{/profile}">Профіль</a>
                 </li>
+                <li class="nav-item" th:if="${userRole == 'CLIENT'}">
+                    <a class="nav-link" th:href="@{/orders}">Мої замовлення</a>
+                </li>
                 <li class="nav-item" th:if="${userRole == 'COLLECTOR_MANAGER'}">
                     <a class="nav-link" th:href="@{/collector/rooms}">Групові замовлення</a>
                 </li>

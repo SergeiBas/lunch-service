@@ -64,6 +64,7 @@
 
             <div class="text-center">
                 <a class="btn btn-success" th:href="@{/menu}">Повернутися до меню</a>
+                <a class="btn btn-outline-secondary" th:if="${currentUser != null}" th:href="@{/orders}">Мої замовлення</a>
             </div>
         </div>
     </div>
